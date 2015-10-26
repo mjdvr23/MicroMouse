@@ -8,6 +8,7 @@ int valLeft;
 int encoder0PinALeft = 12;
 int encoder0PinBLeft = 13;
 int encoder0PosLeft = 0;
+int encoder0PrevPosLeft = 0;
 int encoder0PinALastLeft = LOW;
 int nLeft = LOW;
 
@@ -18,6 +19,7 @@ int encoder0PosRight = 0;
 int encoder0PinALastRight = LOW;
 int nRight = LOW;
 int empieza = 0;
+boolean moves;
 
 
 int pwm = 250;
@@ -51,29 +53,46 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
+  encoder0PrevPosLeft=encoder0PosLeft;
+  
   if (empieza == 0) {
-    analogWrite(in_1, pwm);
-    analogWrite(in_3, pwm);
+    
+//    analogWrite(in_1, pwm);
+//    analogWrite(in_3, pwm);
+    moves=true;
     startTime = millis();
     empieza = 1;
   }
   endTime = millis();
-
-  if ((endTime - startTime) <= timeRun) {
-    encoders();
-    checkEncoders();
+  
+   encoders();
+   
+   if(encoder0PrevPosLeft == encoder0PosLeft && (endTime - startTime)<1000 && moves){
+     analogWrite(in_1, pwm);
+     Serial.print ("Encoder left: ");
+     
+     }
+     
+    if(encoder0PrevPosLeft != encoder0PosLeft){
+      moves=false;
+      analogWrite(in_1, 0);
+     }
+  
+     
+    if(!moves && (endTime - startTime)>1000 ){
+    startTime=endTime;
+    moves = true;
   }
-  else
-    pausaMotor(true, true);
+
 }
 
 
-void forward(boolean runMotor1, boolean runMotor2) {
-  if (runMotor1)
+void forward(boolean leftMotor, boolean rightMotor) {
+  if (leftMotor)
     analogWrite(in_3, pwm);
   else
     analogWrite(in_3, 0);
-  if (runMotor2)
+  if (rightMotor)
     analogWrite(in_1, pwm);
   else
     analogWrite(in_1, 0);
@@ -84,23 +103,27 @@ void forward(boolean runMotor1, boolean runMotor2) {
 }
 
 void checkEncoders() {
-  if (encoder0PosRight > encoder0PosLeft) {
-    forward(false, true);
+  if (encoder0PosRight < encoder0PosLeft) {
+    forward(true, false);
 
   }
-  else if (encoder0PosRight < encoder0PosLeft) {
-    forward(true, false);
+  else if (encoder0PosRight > encoder0PosLeft) {
+    forward(false, true);
   }
   else
     forward(true, true);
 
 }
 
-void pausaMotor(boolean stopMotor1, boolean stopMotor2) {
-  if (stopMotor1)
-    analogWrite(in_1, 0);
-  if (stopMotor2)
+void pausaMotor(boolean leftMotor, boolean rightMotor) {
+  if (leftMotor)
     analogWrite(in_3, 0);
+  if (rightMotor)
+    analogWrite(in_1, 0);
+}
+
+boolean moveTick(){
+
 }
 
 void encoders() {
