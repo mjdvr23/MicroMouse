@@ -44,11 +44,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  encoder();
+  checkRightEncoder();
   setPWMRight();
 
 
-  setPWMLeft();
+
 }
 
 
@@ -65,6 +65,7 @@ void setPWMRight() {
 
     analogWrite(in_3, pwmRight);
     if (encoder0PosRight > 0) {
+      Serial.print("PWM Derecho ");
       Serial.println(pwmRight);
       pausaMotorRight();
     }
@@ -84,10 +85,11 @@ void setPWMLeft() {
     }
     analogWrite(in_1, pwmLeft);
     if (encoder0PosLeft > 0) {
+      Serial.print("PWM Izquierdo ");
       Serial.println(pwmLeft);
       pausaMotorLeft();
     }
-      delay(500);
+    delay(1000);
   }
 
 
@@ -133,6 +135,46 @@ void encoder() {
 
   encoder0PinALastRight = nRight;
 
+}
+
+void checkLeftEncoder() {
+  nLeft = digitalRead(encoder0PinALeft);
+  if ((encoder0PinALastLeft == LOW) && (nLeft == HIGH)) {
+    if (digitalRead(encoder0PinBLeft) == LOW) {
+      encoder0PosLeft--;
+    } else {
+      encoder0PosLeft++;
+    }
+    Serial.print ("Encoder left: ");
+    Serial.print(encoder0PosLeft);
+    Serial.print("   ");
+    Serial.print ("Encoder Right: ");
+    Serial.println(encoder0PosRight);
+
+
+  }
+  encoder0PinALastLeft = nLeft;
+
+}
+
+void checkRightEncoder() {
+  nRight = digitalRead(encoder0PinARight);
+  if ((encoder0PinALastRight == LOW) && (nRight == HIGH)) {
+    if (digitalRead(encoder0PinBRight) == LOW) {
+      encoder0PosRight--;
+    } else {
+      encoder0PosRight++;
+    }
+
+    Serial.print ("Encoder left: ");
+    Serial.print(encoder0PosLeft);
+    Serial.print("   ");
+    Serial.print ("Encoder Right: ");
+    Serial.println(encoder0PosRight);
+
+  }
+
+  encoder0PinALastRight = nRight;
 }
 
 void pausaMotorRight() {
