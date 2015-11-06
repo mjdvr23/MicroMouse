@@ -9,8 +9,34 @@
 #define encoder_B_PinLeft 13
 #define encoder_B_PinRight 4
 
-int encoder_PosLeft= 0;
+int encoder_PosLeft = 0;
 int encoder_PosRight = 0;
+
+int encoder_PrevPos_Left;
+int encoder_PrevPos_Right;
+
+
+int xOR_Value_Left;
+int xOR_Value_Right;
+
+int xOR_PrevValue_Left;
+int xOR_PrevValue_Right;
+
+int encoder_B_Value_Left=HIGH;
+int encoder_B_Value_Right;
+
+int encoder_B_PrevValue_Left;
+int encoder_B_PrevValue_Right;
+
+int encoder_A_Value_Left=HIGH;
+int encoder_A_Value_Right;
+
+int encoder_A_PrevValue_Left;
+int encoder_A_PrevValue_Right;
+
+
+
+
 
 
 
@@ -32,22 +58,73 @@ void setup() {
 
 
 
-attachInterrupt(digitalPinToInterrupt(xOR_LeftPin), readxORLeft, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(xOR_LeftPin), readxORLeft, CHANGE);
 
-attachInterrupt(digitalPinToInterrupt(xOR_RightPin), readxORRight, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(xOR_RightPin), readxORRight, CHANGE);
+
+  Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  //if (encoder_PrevPos_Left != encoder_PosLeft) {
 
+  //  }
 }
 
-void readxORLeft (){
- 
+void readxORLeft () {
+
+  xOR_PrevValue_Left = xOR_Value_Left;
+
+  encoder_A_PrevValue_Left = encoder_A_Value_Left;
+  encoder_B_PrevValue_Left= encoder_B_Value_Left;
+  xOR_Value_Left = digitalRead(encoder_PosLeft);
+  encoder_B_Value_Left = digitalRead(encoder_B_PinLeft);
+  encoder_A_Value_Left = xOR_Value_Left ^ encoder_B_Value_Left;
+
+  encoder_PrevPos_Left = encoder_PosLeft;
+
+ if ((encoder_B_Value_Left ^ encoder_A_PrevValue_Left) & ~(encoder_A_Value_Left ^ encoder_B_PrevValue_Left)) {
+    encoder_PosLeft++;
   }
+else{
+  encoder_PosLeft--;
+}
 
-void readxORRight(){
+
+
+//  if (encoder_B_Value_Left == encoder_A_Value_Left) {
+//    encoder_PosLeft++;
+//  } else {
+//    encoder_PosLeft--;
+//  }
+
+
+
+
+//    if (encoder_A_Value_Left == LOW) {
+//      if (encoder_B_Value_Left == LOW) {
+//        encoder_PosLeft--;
+//      }
+//      else {
+//        encoder_PosLeft++;
+//      }
+//    }
+//    else if (encoder_B_Value_Left == LOW) {
+//      encoder_PosLeft++;
+//    }
+//    else {
+//      encoder_PosLeft--;
+//    }
+  Serial.println(encoder_PosLeft);
+}
+
+
+
+
+
+void readxORRight() {
 
 }
 
- 
+
